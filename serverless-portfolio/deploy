@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "Deploying CloudFormation stack..."
+
+aws cloudformation deploy \
+  --template-file ./template.yaml \
+  --stack-name serverless-web-portfolio \
+  --region us-east-1 \

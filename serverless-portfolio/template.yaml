@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: S3 + CloudFront (OAC) + ACM + Route53 fixed setup
+
+Resources:
+
+  MyBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: shubhsjadhav95-serverless-web-portfolio
+
+  MyOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: S3-OAC
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+        Description: OAC for S3
+
+  MyDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+
+        Aliases:
+          - portfolio.devcloudzone.store
+
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt MyBucket.RegionalDomainName
+
+            S3OriginConfig: {}   
+
+            OriginAccessControlId: !Ref MyOriginAccessControl
+
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+
+          AllowedMethods:
+            - GET
+            - HEAD
+
+          CachedMethods:
+            - GET
+            - HEAD
+
+          ForwardedValues:
+            QueryString: false
+
+        ViewerCertificate:
+          AcmCertificateArn: arn:aws:acm:us-east-1:347026173735:certificate/6c33d96f-ba4a-4cdb-ac0b-d431a1a52439
+          SslSupportMethod: sni-only
+
+  MyBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MyBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontAccessOnly
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${MyBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::347026173735:distribution/${MyDistribution}"
+
+  MyDNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: Z011571237RK24JJ52PL5
+      Name: portfolio.devcloudzone.store
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt MyDistribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2
+
+Outputs:
+  CloudFrontURL:
+    Value: !GetAtt MyDistribution.DomainName
+
+  WebsiteURL:
+    Value: https://portfolio.devcloudzone.store
