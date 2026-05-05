@@ -15,10 +15,11 @@ https://portfolio.devcloudzone.store/
 ### Created an s3 bucket and added an cloudfront Access bucket policy attached
 ### Upload your index.html file
 
-### Cloudfront creates an distribution which consists following --> defalut root index.html
-###                                                             --> origin as origin access control
-###                                                             --> validated a certificate of my domain
-###                                                             --> Get bucket policy via Origin/edit
+### Cloudfront creates an distribution which consists following 
+### --> defalut root index.html
+### --> origin as origin access control
+### --> validated a certificate of my domain
+### --> Get bucket policy via Origin/edit
 
 ### In Route 53 added an record of alias subdomain of a cloudfront 
 
