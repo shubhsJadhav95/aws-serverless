@@ -1,3 +1,5 @@
+![alt text](image.png)
+
 ### Create an dynnamo db table constist attribute as id,name,available and price
 
 ### Create an iam role with a lamdabasicexecution and inline dynamodb  get,post etc policy
@@ -9,3 +11,9 @@ https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/javascript_dyn
 
 ### api integration with a lambda function with a route
 
+### individual file of each function with same dependecy are large hence perfrorm layer
+
+### Create layer upload all nodejs required dependency in zip format attach to an lambda function
+### zip -r layer.zip . 
+
+### Hence not required to upload individual dependency from an each function layer is global for all attach function
